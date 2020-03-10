@@ -1,4 +1,4 @@
-package com.nexus.boosttestapp
+package com.nexus.mvvmmessenger
 
 import android.app.Application
 
