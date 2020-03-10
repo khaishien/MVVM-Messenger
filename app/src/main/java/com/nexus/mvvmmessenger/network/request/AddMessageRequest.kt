@@ -1,0 +1,10 @@
+package com.nexus.mvvmmessenger.network.request
+
+import com.google.gson.annotations.SerializedName
+import com.nexus.mvvmmessenger.core.BaseRequest
+
+class AddMessageRequest : BaseRequest() {
+
+    @SerializedName("message")
+    lateinit var message: String
+}
