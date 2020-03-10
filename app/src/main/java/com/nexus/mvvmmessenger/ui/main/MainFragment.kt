@@ -3,12 +3,12 @@ package com.nexus.mvvmmessenger.ui.main
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.DialogInterface
+import android.util.Log
 import androidx.lifecycle.Observer
 import com.nexus.mvvmmessenger.R
 import com.nexus.mvvmmessenger.core.BaseFragment
 import com.nexus.mvvmmessenger.databinding.FragmentMainBinding
 import com.nexus.mvvmmessenger.model.MessageModel
-import kotlinx.android.synthetic.main.list_item_incoming_message.*
 import java.util.*
 import kotlin.concurrent.schedule
 
@@ -26,13 +26,11 @@ class MainFragment : BaseFragment<FragmentMainBinding, MainViewModel>() {
 
     override fun onInit() {
 
-        mBinding!!.messageList.adapter = MessageAdapter(object : MessageAdapter.OnCallback {
-            override fun onLongClick(messageModel: MessageModel) {
+        setupUI()
 
-            }
-        })
 
         mViewModel!!.getMessages()
+
     }
 
     override fun subscribeObserver() {
@@ -41,6 +39,23 @@ class MainFragment : BaseFragment<FragmentMainBinding, MainViewModel>() {
         mViewModel!!.getMessagesEvent.observe(this, Observer { messages ->
             val adapter = mBinding!!.messageList.adapter as MessageAdapter
             adapter.messages = messages
+
+            if (adapter.itemCount > 0) {
+                mBinding!!.messageList.post {
+                    mBinding!!.messageList.smoothScrollToPosition(adapter.itemCount - 1)
+                }
+            }
+
+        })
+
+        mViewModel!!.onAddMessageEvent.observe(this, Observer { aBoolean ->
+
+//            mBinding!!.fabSent.isEnabled = true
+//            mBinding!!.etNewMessage.isEnabled = true
+
+            if (aBoolean) {
+                mBinding!!.etNewMessage.text?.clear()
+            }
         })
     }
 
@@ -54,6 +69,28 @@ class MainFragment : BaseFragment<FragmentMainBinding, MainViewModel>() {
         stopTimer()
     }
 
+    private fun setupUI() {
+        mBinding!!.isSending = mViewModel!!.isSending
+
+        mBinding!!.messageList.adapter = MessageAdapter(object : MessageAdapter.OnCallback {
+            override fun onLongClick(messageModel: MessageModel) {
+                Log.d("TAG", "setOnLongClickListener")
+                showConfirmDeleteDialog(messageModel)
+            }
+        })
+
+        mBinding!!.fabSent.setOnClickListener {
+            val value = mBinding!!.etNewMessage.text
+            if (!value.isNullOrEmpty()) {
+                mViewModel!!.addMessage(value.toString())
+
+                // after submit
+//                mBinding!!.fabSent.isEnabled = false
+//                mBinding!!.etNewMessage.isEnabled = false
+                hideSoftKeyBoard(context!!, mBinding!!.root)
+            }
+        }
+    }
 
     private fun runTimer() {
         val calendar = Calendar.getInstance()
@@ -89,5 +126,18 @@ class MainFragment : BaseFragment<FragmentMainBinding, MainViewModel>() {
                 }
             }
         this.mTimerDialog = builder.show()
+    }
+
+    private fun showConfirmDeleteDialog(messageModel: MessageModel) {
+        AlertDialog.Builder(context)
+            .setMessage(R.string.desc_dialog_delete)
+            .setCancelable(false)
+            .setPositiveButton(R.string.title_delete) { _: DialogInterface, _: Int ->
+                mViewModel!!.deleteMessage(messageModel)
+            }
+            .setNegativeButton(R.string.title_cancel) { dialog: DialogInterface, _: Int ->
+                dialog.dismiss()
+            }
+            .show()
     }
 }

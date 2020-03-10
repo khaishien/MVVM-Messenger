@@ -17,15 +17,42 @@ class MessageRepository private constructor(private val messageDao: MessageDao) 
                     callback.onEmpty()
                 } else {
                     callback.onMessageLoad(messages)
-
                 }
             }
         }
     }
 
-    fun addMessage(messageModel: MessageModel) = messageDao.addMessage(messageModel)
+    fun addMessage(messageModel: MessageModel, callback: GetMessageCallback) {
+        Executors.newSingleThreadExecutor().execute {
+            messageDao.addMessage(messageModel)
+            val messages = messageDao.getMessages()
+            val mainThreadHandler = Handler(Looper.getMainLooper())
+            mainThreadHandler.post {
+                if (messages.isEmpty()) {
+                    callback.onEmpty()
+                } else {
+                    callback.onMessageLoad(messages)
+                }
 
-    fun deleteMessage(messageModel: MessageModel) = messageDao.deleteMessage(messageModel)
+            }
+        }
+    }
+
+    fun deleteMessage(messageModel: MessageModel, callback: GetMessageCallback) {
+        Executors.newSingleThreadExecutor().execute {
+            messageDao.deleteMessage(messageModel)
+            val messages = messageDao.getMessages()
+            val mainThreadHandler = Handler(Looper.getMainLooper())
+            mainThreadHandler.post {
+                if (messages.isEmpty()) {
+                    callback.onEmpty()
+                } else {
+                    callback.onMessageLoad(messages)
+                }
+
+            }
+        }
+    }
 
 
     companion object {

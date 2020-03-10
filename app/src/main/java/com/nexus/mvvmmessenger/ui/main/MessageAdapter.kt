@@ -1,5 +1,6 @@
 package com.nexus.mvvmmessenger.ui.main
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
@@ -124,7 +125,7 @@ class MessageAdapter(
             }
             binding.layout.setOnLongClickListener {
                 onCallback.onLongClick(binding.viewModel!!.messageModel)
-                true
+                false
             }
 
         }

@@ -22,6 +22,8 @@
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:background="@drawable/shape_bg_incoming_bubble"
+            android:clickable="true"
+            android:focusable="true"
             android:foreground="?android:selectableItemBackground"
             android:gravity="center_vertical"
             android:minHeight="60dp"
