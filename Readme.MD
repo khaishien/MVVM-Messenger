@@ -7,7 +7,7 @@ A Android Project that using MVVM concept
 [x] Pop Dialog "Are you there?" at end of the minutes
 [x] Post message to API
 [x] Show preloaded data on screen
-[ ] Unit test
+[x] UI test
 
 
 ## Library

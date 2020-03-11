@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MVVM Messenger</string>
+    <string name="app_name">Messenger</string>
     <string name="title_error">Error!</string>
     <string name="title_ok">OK</string>
     <string name="desc_dialog_delete">Confirm to delete the message?</string>
